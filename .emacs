@@ -2,7 +2,6 @@
 
 (load "cl" t)
 (push 'balance-windows window-size-change-functions)
-(savehist-mode)
 (defalias 'yes-or-no-p 'y-or-n-p)
 (setq vc-handled-backends nil)
 (menu-bar-mode 0)
@@ -19,6 +18,7 @@
 (setq fill-column 80)
 (setq-default indicate-empty-lines t)
 (setq-default indicate-buffer-boundaries 'right)
+(put 'downcase-region 'disabled nil)
 (setq viper-mode t)
 
 (setq backup-by-copying t
@@ -34,7 +34,16 @@
 
 ;;; Extra loads
 
-(when (load "package" t)
+(defun tryload (str)
+  (if (load str t)
+      t
+    (progn (message "Error loading %s" str)
+           nil)))
+
+(when (tryload "savehist")
+  (savehist-mode))
+
+(when (tryload "package")
   (mapc (lambda (elem)
 	  (add-to-list 'package-archives elem t))
         '(("tromey" . "http://tromey.com/elpa")
@@ -42,46 +51,48 @@
           ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
 
-(when (load "viper" t)
+(when (tryload "viper")
   (viper-mode))
 
-(when (load "rainbow-delimiters" t)
+(when (tryload "rainbow-delimiters")
   (add-hook 'lisp-mode-hook 'rainbow-delimiters)
   (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode))
 
-(when (load "linum" t)
+(when (tryload "linum")
   (setq linum-format "%4d ")
   (add-hook 'prog-mode-hook 'linum-mode)
   (add-hook 'text-mode-hook 'linum-mode))
 
-(when (load "cc-mode" t)
+(when (tryload "cc-mode")
   (setq-default c-basic-offset     4
                 tab-width          4
                 indent-tabs-mode   nil
                 c-default-style    "k&r"))
 
-(when (load "fill-column-indicator" t)
+(when (tryload "fill-column-indicator")
   (setq fci-rule-width 1)
   (setq fci-rule-color "#333333")
   (add-hook 'prog-mode-hook 'fci-mode)
   (add-hook 'text-mode-hook 'fci-mode))
 
-(when (load "color-theme" t)
+(when (tryload "color-theme")
   (color-theme-initialize)
-  (when (load "color-theme-kilcros" t)
+  (when (tryload "color-theme-kilcros")
     (color-theme-kilcros)))
 
-(when (load "scheme-mode" t)
+(when (tryload "scheme-mode")
   (set 'scheme-program-name "csi")
   (add-to-list 'load-path "/usr/lib/chicken/6/")
   (autoload 'chicken-slime "chicken-slime" "SWANK backend for Chicken" t)
   (add-hook 'scheme-mode-hook (lambda ()
                                 (slime-mode t))))
 
-(load (expand-file-name "~/quicklisp/slime-helper.el") t)
-(setq inferior-lisp-program "sbcl")
-(when (load "slime" t)
+
+
+(when (and (tryload (expand-file-name "~/quicklisp/slime-helper.el"))
+           (setq inferior-lisp-program "sbcl")
+           (tryload "slime"))
   (slime-setup '(slime-fancy slime-banner))
   (defun slime-start-here ()
     (interactive)
@@ -89,11 +100,10 @@
     (delete-window)
     (switch-to-buffer "*inferior-lisp*")))
 
-(when (load "haskell-mode" t)
+(when (tryload "haskell-mode")
   (add-to-list 'auto-mode-alist
                '("\\.hs\\'" . haskell-mode)))
 
-(when (load "windmove" t)
+(when (tryload "windmove")
   (when (fboundp 'windmove-default-keybindings)
-    (windmove-default-keybindings))
-  (put 'downcase-region 'disabled nil))
+    (windmove-default-keybindings)))
