@@ -35,10 +35,10 @@
 ;;; Extra loads
 
 (defun tryload (str)
-  (if (load str t)
-      t
-    (progn (message "Error loading %s" str)
-           nil)))
+  (let ((result (load str t)))
+    (when (not result)
+      (message "Error loading %s" str))
+    result))
 
 (when (tryload "savehist")
   (savehist-mode))
