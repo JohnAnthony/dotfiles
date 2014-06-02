@@ -42,7 +42,7 @@
 (defun tryload (str)
   (let ((result (load str t)))
     (when (not result)
-      (message "Error loading %s" str))
+      (message ":: Error loading %s" str))
     result))
 
 (when (tryload "savehist")
@@ -56,9 +56,11 @@
           ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
 
-(when (and (setq viper-mode t)
-           (tryload "viper"))
-  (viper-mode))
+(if (tryload "evil")
+    (evil-mode 1)
+  (when (and (setq viper-mode t)
+             (tryload "viper"))
+    (viper-mode)))
 
 (when (tryload "rainbow-delimiters")
   (add-hook 'lisp-mode-hook 'rainbow-delimiters)
@@ -93,8 +95,6 @@
   (autoload 'chicken-slime "chicken-slime" "SWANK backend for Chicken" t)
   (add-hook 'scheme-mode-hook (lambda ()
                                 (slime-mode t))))
-
-
 
 (when (and (tryload (expand-file-name "~/quicklisp/slime-helper.el"))
            (setq inferior-lisp-program "sbcl")
