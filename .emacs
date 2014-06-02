@@ -1,12 +1,9 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
-(load "cl" t)
 (push 'balance-windows window-size-change-functions)
 (defalias 'yes-or-no-p 'y-or-n-p)
-(setq vc-handled-backends nil)
 (menu-bar-mode 0)
-(when (functionp 'scroll-bar-mode)
-  (scroll-bar-mode 0))
+
 (setq inhibit-startup-message t
       initial-scratch-message nil
       inhibit-startup-buffer-menu t
@@ -19,7 +16,7 @@
 (setq-default indicate-empty-lines t)
 (setq-default indicate-buffer-boundaries 'right)
 (put 'downcase-region 'disabled nil)
-(setq viper-mode t)
+(server-start)
 
 (setq backup-by-copying t
       backup-directory-alist '(("." . "~/.saves"))
@@ -31,6 +28,14 @@
 (custom-set-variables
  '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
+
+;;; Settings for various packages
+
+(when (symbolp 'vc-handled-backends)
+  (setq vc-handled-backends nil))
+
+(when (functionp 'scroll-bar-mode)
+  (scroll-bar-mode 0))
 
 ;;; Extra loads
 
@@ -51,7 +56,8 @@
           ("melpa" . "http://melpa.milkbox.net/packages/")))
   (package-initialize))
 
-(when (tryload "viper")
+(when (and (setq viper-mode t)
+           (tryload "viper"))
   (viper-mode))
 
 (when (tryload "rainbow-delimiters")
