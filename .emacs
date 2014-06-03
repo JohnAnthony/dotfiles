@@ -63,7 +63,7 @@
     (viper-mode)))
 
 (when (tryload "rainbow-delimiters")
-  (add-hook 'lisp-mode-hook 'rainbow-delimiters)
+  (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode))
 
@@ -89,7 +89,7 @@
   (when (tryload "color-theme-kilcros")
     (color-theme-kilcros)))
 
-(when (tryload "scheme-mode")
+(when (tryload "scheme")
   (set 'scheme-program-name "csi")
   (add-to-list 'load-path "/usr/lib/chicken/6/")
   (autoload 'chicken-slime "chicken-slime" "SWANK backend for Chicken" t)
