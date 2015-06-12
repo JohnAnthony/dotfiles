@@ -8,7 +8,7 @@
       initial-scratch-message nil
       inhibit-startup-buffer-menu t
       message-log-max 10000
-      default-major-mode 'text-mode)
+      major-mode 'text-mode)
 (setq split-height-threshold nil)
 (tool-bar-mode 0)
 (setq-default fill-column 80)
@@ -19,7 +19,6 @@
 (server-start)
 
 (setq backup-by-copying t
-      backup-directory-alist '(("." . "~/.saves"))
       delete-old-versions t
       kept-new-versions 6
       kept-old-versions 2
@@ -28,6 +27,15 @@
 (custom-set-variables
  '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;;; Helpers
+
+(defun tryload (str)
+  (let ((result (load str t)))
+    (when (not result)
+      (message ":: Error loading %s" str))
+    result))
 
 ;;; Settings for various packages
 
@@ -38,12 +46,6 @@
   (scroll-bar-mode 0))
 
 ;;; Extra loads
-
-(defun tryload (str)
-  (let ((result (load str t)))
-    (when (not result)
-      (message ":: Error loading %s" str))
-    result))
 
 (when (tryload "savehist")
   (savehist-mode))
@@ -63,6 +65,7 @@
     (viper-mode)))
 
 (when (tryload "rainbow-delimiters")
+  (add-hook 'javascript-mode 'rainbow-delimiters-mode)
   (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode))
@@ -89,13 +92,6 @@
   (when (tryload "color-theme-kilcros")
     (color-theme-kilcros)))
 
-(when (tryload "scheme")
-  (set 'scheme-program-name "csi")
-  (add-to-list 'load-path "/usr/lib/chicken/6/")
-  (autoload 'chicken-slime "chicken-slime" "SWANK backend for Chicken" t)
-  (add-hook 'scheme-mode-hook (lambda ()
-                                (slime-mode t))))
-
 (when (and (tryload (expand-file-name "~/quicklisp/slime-helper.el"))
            (setq inferior-lisp-program "sbcl")
            (tryload "slime"))
@@ -108,8 +104,38 @@
 
 (when (tryload "haskell-mode")
   (add-to-list 'auto-mode-alist
-               '("\\.hs\\'" . haskell-mode)))
+               '("\\.hs\\'" . haskell-mode))
+  (haskell-simple-indent-mode))
 
 (when (tryload "windmove")
   (when (fboundp 'windmove-default-keybindings)
     (windmove-default-keybindings)))
+
+(when (tryload "geiser")
+  (setq geiser-guile-load-path '("/home/john/scheme"))
+  (setq geiser-repl-use-other-window nil)
+  (setq geiser-scheme-implementation "guile"))
+
+(when (tryload "web-mode")
+  (add-to-list 'auto-mode-alist
+               '("\\.html\\'" . web-mode))
+  (add-to-list 'auto-mode-alist
+               '("\\.htm\\'" . web-mode)))
+
+;;; Mode-specific stuff
+
+(when (tryload "typescript")
+  (defun typescript-compile ()
+    (interactive)
+    (shell-command (concat "tsc " (buffer-name))))
+  (defalias 'tsc 'typescript-compile)
+  (define-key typescript-mode-map [(control ?c) (control ?b)] #'tsc))
+
+(when (tryload "go-mode")
+  (defun go-build ()
+    (interactive)
+    (shell-command (concat "go build " (buffer-name))))
+  (define-key go-mode-map [(control ?c) (control ?b)] #'go-build))
+
+;; Emacs lisp mode
+(define-key emacs-lisp-mode-map [(control ?c) (control ?b)] #'emacs-lisp-byte-compile)
