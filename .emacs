@@ -8,9 +8,9 @@
       initial-scratch-message nil
       inhibit-startup-buffer-menu t
       message-log-max 10000
-      major-mode 'text-mode)
+      default-major-mode 'text-mode)
 (setq split-height-threshold nil)
-(tool-bar-mode 0)
+;(tool-bar-mode 0)
 (setq-default fill-column 80)
 (setq fill-column 80)
 (setq-default indicate-empty-lines t)
@@ -19,6 +19,7 @@
 (server-start)
 
 (setq backup-by-copying t
+      backup-directory-alist '(("." . "~/.saves"))
       delete-old-versions t
       kept-new-versions 6
       kept-old-versions 2
@@ -27,15 +28,6 @@
 (custom-set-variables
  '(auto-save-file-name-transforms '((".*" "~/.emacs.d/autosaves/\\1" t)))
  '(backup-directory-alist '((".*" . "~/.emacs.d/backups/"))))
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;;; Helpers
-
-(defun tryload (str)
-  (let ((result (load str t)))
-    (when (not result)
-      (message ":: Error loading %s" str))
-    result))
 
 ;;; Settings for various packages
 
@@ -46,6 +38,12 @@
   (scroll-bar-mode 0))
 
 ;;; Extra loads
+
+(defun tryload (str)
+  (let ((result (load str t)))
+    (when (not result)
+      (message ":: Error loading %s" str))
+    result))
 
 (when (tryload "savehist")
   (savehist-mode))
@@ -64,11 +62,12 @@
              (tryload "viper"))
     (viper-mode)))
 
-;(when (tryload "rainbow-delimiters")
-;  (add-hook 'javascript-mode-hook 'rainbow-delimiters-mode-enable)
-;  (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode-enable)
-;  (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode-enable)
-;  (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode-enable))
+(when (tryload "rainbow-delimiters")
+  (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
+  (add-hook' javascript-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'haskell-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'scheme-mode-hook 'rainbow-delimiters-mode))
 
 (when (tryload "linum")
   (setq linum-format "%4d ")
@@ -112,30 +111,4 @@
     (windmove-default-keybindings)))
 
 (when (tryload "geiser")
-  (setq geiser-guile-load-path '("/home/john/scheme"))
-  (setq geiser-repl-use-other-window nil)
-  (setq geiser-scheme-implementation "guile"))
-
-(when (tryload "web-mode")
-  (add-to-list 'auto-mode-alist
-               '("\\.html\\'" . web-mode))
-  (add-to-list 'auto-mode-alist
-               '("\\.htm\\'" . web-mode)))
-
-;;; Mode-specific stuff
-
-(when (tryload "typescript")
-  (defun typescript-compile ()
-    (interactive)
-    (shell-command (concat "tsc " (buffer-name))))
-  (defalias 'tsc 'typescript-compile)
-  (define-key typescript-mode-map [(control ?c) (control ?b)] #'tsc))
-
-(when (tryload "go-mode")
-  (defun go-build ()
-    (interactive)
-    (shell-command (concat "go build " (buffer-name))))
-  (define-key go-mode-map [(control ?c) (control ?b)] #'go-build))
-
-;; Emacs lisp mode
-(define-key emacs-lisp-mode-map [(control ?c) (control ?b)] #'emacs-lisp-byte-compile)
+  (setq geiser-guile-load-path '("/home/john/scheme")))
