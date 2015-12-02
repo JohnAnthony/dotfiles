@@ -31,7 +31,7 @@ export MSF_DATABASE_CONFIG=/home/john/metasploit-framework/database.yml
 #precmd_functions=""
 
 # Common variables
-export EDITOR="emacsclient"
+export EDITOR="vim"
 export ALTERNATE_EDITOR="emacs"
 
 # Aliases
@@ -41,6 +41,7 @@ alias emacs="dtach -A /tmp/emacs.dtach emacs -nw"
 alias proc='ps aux | grep -v grep | grep'
 alias timestamp='date "+%s"'
 alias emacs=emacssession
+alias x='ls -tralh'
 
 # Add extra paths
 export PATH="/home/john/.cabal/bin:/usr/local/bin:$GOBIN:$PATH"

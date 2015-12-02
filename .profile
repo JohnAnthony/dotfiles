@@ -13,7 +13,7 @@ alias s=sudo
 alias ls="ls --color -F"
 alias z=zathura
 alias stamp="date +%s-%N"
-alias gdb "gdb -q"
+alias gdb="gdb -q"
 alias sprunge='curl -F "sprunge=<-" http://sprunge.us'
 alias pb='qiv -muw 1920'
 alias pbshuf='qiv -Smuw 1920'
@@ -28,3 +28,5 @@ alias p=pacman
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+export ANDROID_HOME=~/android-sdk-linux

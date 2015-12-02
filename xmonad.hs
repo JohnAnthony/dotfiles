@@ -37,7 +37,8 @@ termSessACmd   = termExec "tmux attach"
 restartCmd     = "xmonad --recompile && xmonad --restart"
 audioMixerCmd  = termExec "alsamixer"
 browserCmd     = "firefox"
-editorCmd      = termExec "dtach -A /tmp/emacs.dtach emacs -nw"
+editorCmd      = termExec "vim"
+altEditorCmd   = termExec "dtach -A /tmp/emacs.dtach emacs -nw"
 emailCmd       = termExec "mutt"
 ircCmd         = termExec "dtach -A /tmp/irssi.dtach irssi"
 mediaPlayerCmd = termExec "ncmpcpp"
@@ -94,6 +95,7 @@ myKeys conf = M.fromList $ switchKeys ++ moveKeys ++
   , ((modKey,         xK_n               ), spawn browserCmd) 
   , ((modKey,         xK_i               ), spawn ircCmd)
   , ((modKey,         xK_e               ), spawn editorCmd)
+  , ((modKeyShift,    xK_e               ), spawn altEditorCmd)
   , ((modKey,         xK_t               ), spawn termSessionCmd)
   , ((modAndShift,    xK_t               ), spawn termSessACmd)
   , ((modKey,         xK_Return          ), spawn termCmd)
