@@ -42,6 +42,10 @@ alias proc='ps aux | grep -v grep | grep'
 alias timestamp='date "+%s"'
 alias emacs=emacssession
 alias x='ls -tralh'
+alias s=sudo
+alias a=aptitude
+alias sa='sudo aptitude'
+alias z=zathura
 
 # Add extra paths
 export PATH="/home/john/.cabal/bin:/usr/local/bin:$GOBIN:$PATH"
